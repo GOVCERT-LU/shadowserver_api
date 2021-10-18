@@ -8,5 +8,5 @@ Should work on Python version >= 3.7
 
 ### Installation
 ```shell script
-pip install shadowserver_api
+pip install shadowserver-api
 ```

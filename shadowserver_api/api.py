@@ -140,9 +140,9 @@ class ShadowServerAPI:
                            limit: typing.Optional[int] = None) -> typing.List[typing.Dict[str, typing.Any]]:
     """Download specific report."""
     request_data = {
-      'id':     report_id,
+      'id': report_id,
       'report': report
-      }
+    }
 
     if limit:
       request_data['limit'] = str(limit)
@@ -178,9 +178,9 @@ class ShadowServerAPI:
 
     request_data = {
       'query': query,
-      'sort':  sort,
-      'page':  '1',
-      }
+      'sort': sort,
+      'page': '1',
+    }
 
     if start_date:
       if not regex_date.match(start_date):

@@ -11,3 +11,4 @@ dist
 .pytest_cache
 venv
 .vscode
+shadowserver_api.egg-info

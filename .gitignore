@@ -1,0 +1,13 @@
+*.pyc
+config.yaml
+
+build
+dist
+.coverage
+.idea
+.tox
+.cache
+.mypy_cache
+.pytest_cache
+venv
+.vscode

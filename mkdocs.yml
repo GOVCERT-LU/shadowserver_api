@@ -1,0 +1,26 @@
+site_name: shadowserver_api
+site_url: https://github.com/GOVCERT-LU/shadowserver_api
+repo_url: https://github.com/GOVCERT-LU/shadowserver_api
+
+
+theme:
+  name: "material"
+  font: false
+
+plugins:
+- search
+- mkdocstrings:
+    default_handler: python
+    handlers:
+      python:
+        rendering:
+          show_source: true
+    watch:
+      - shadowserver_api
+
+markdown_extensions:
+  - pymdownx.highlight:
+      linenums: true
+      linenums_style: pymdownx-inline
+  - pymdownx.superfences
+  - admonition

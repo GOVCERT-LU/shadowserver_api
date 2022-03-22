@@ -139,13 +139,15 @@ class ShadowServerAPI:
 
   def api_reports_download(self,
                            report_id: str,
-                           report: str,
+                           report: typing.Optional[str] = None,
                            limit: typing.Optional[int] = None) -> typing.List[typing.Dict[str, typing.Any]]:
     """Download specific report."""
     request_data = {
       'id': report_id,
-      'report': report
     }
+
+    if report:
+      request_data['report'] = report
 
     if limit:
       request_data['limit'] = str(limit)

@@ -281,3 +281,17 @@ class ShadowServerAPI:
     result = self.api_call('reports/device-info', request_data)
 
     return result
+
+  def api_reports_schema(self,
+                         report_type: str
+                         ) -> typing.Dict[str, typing.Any]:
+    """Return a schema for a given report type.
+
+    Args:
+      report_type: Report type to get the schema for.
+    """
+    request_data = {'type': report_type}
+
+    result = self.api_call('reports/schema', request_data)
+
+    return result

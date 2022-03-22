@@ -103,7 +103,7 @@ class ShadowServerAPI:
   def api_reports_list(self,
                        reports: typing.Optional[typing.List[str]] = None,
                        start_date: typing.Optional[str] = None,
-                       end_data: typing.Optional[str] = None,
+                       end_date: typing.Optional[str] = None,
                        report_type: typing.Optional[str] = None,
                        limit: typing.Optional[int] = None) -> typing.List[typing.Dict[str, typing.Any]]:
     """List of actual reports that could be downloaded."""
@@ -119,11 +119,11 @@ class ShadowServerAPI:
       if not regex_date.match(start_date):
         raise ValueError('Invalid start_date format.')
 
-      if end_data:
-        if not regex_date.match(end_data):
+      if end_date:
+        if not regex_date.match(end_date):
           raise ValueError('Invalid end_date format.')
 
-        request_data['date'] = f'{start_date}:{end_data}'
+        request_data['date'] = f'{start_date}:{end_date}'
       else:
         request_data['date'] = f'{start_date}'
 
@@ -161,7 +161,7 @@ class ShadowServerAPI:
                         query: typing.Dict[str, str],
                         sort: str = 'ascending',
                         start_date: str = None,
-                        end_data: typing.Optional[str] = None,
+                        end_date: typing.Optional[str] = None,
                         facet: typing.Optional[str] = None,
                         limit: int = 1000,
                         pagination: bool = True) -> typing.Iterator[typing.Dict[str, typing.Any]]:
@@ -171,7 +171,7 @@ class ShadowServerAPI:
       query: The query must contain one attribute that matches your organization’s report filters. See https://www.shadowserver.org/what-we-do/network-reporting/api-reports-query/ for details.
       sort: Sort the output. Valid values are "ascending", "descending".
       start_date: Fetch results starting from this date. Format must be (YYYY-MM-DD) or "now".
-      end_data: Fetch results up to this date. Format must be (YYYY-MM-DD) or "now".
+      end_date: Fetch results up to this date. Format must be (YYYY-MM-DD) or "now".
       facet: Returns the cardinality of each value of the given field sorted from highest to lowest.
       limit: Number of records to pull.
       pagination: If set to True, automatically pulls all results using pagination.
@@ -189,11 +189,11 @@ class ShadowServerAPI:
       if not regex_date.match(start_date):
         raise ValueError('Invalid start_date format.')
 
-      if end_data:
-        if not regex_date.match(end_data):
+      if end_date:
+        if not regex_date.match(end_date):
           raise ValueError('Invalid end_date format.')
 
-        request_data['date'] = f'{start_date}:{end_data}'
+        request_data['date'] = f'{start_date}:{end_date}'
       else:
         request_data['date'] = f'{start_date}'
 
@@ -226,14 +226,14 @@ class ShadowServerAPI:
 
   def api_reports_stats(self,
                         start_date: str = None,
-                        end_data: typing.Optional[str] = None,
+                        end_date: typing.Optional[str] = None,
                         report: typing.Optional[typing.Sequence[str]] = None,
                         report_type: typing.Optional[typing.Sequence[str]] = None) -> typing.List[typing.Tuple[str, str, str]]:
     """Fetch report statistics.
 
     Args:
       start_date: Fetch results starting from this date. Format must be (YYYY-MM-DD) or "now".
-      end_data: Fetch results up to this date. Format must be (YYYY-MM-DD) or "now".
+      end_date: Fetch results up to this date. Format must be (YYYY-MM-DD) or "now".
       report: Filter by report name.
       report_type: Filter by report type.
     """
@@ -246,11 +246,11 @@ class ShadowServerAPI:
       if not regex_date.match(start_date):
         raise ValueError('Invalid start_date format.')
 
-      if end_data:
-        if not regex_date.match(end_data):
+      if end_date:
+        if not regex_date.match(end_date):
           raise ValueError('Invalid end_date format.')
 
-        request_data['date'] = f'{start_date}:{end_data}'
+        request_data['date'] = f'{start_date}:{end_date}'
       else:
         request_data['date'] = f'{start_date}'
 

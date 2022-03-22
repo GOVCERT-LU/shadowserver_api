@@ -74,10 +74,13 @@ class ShadowServerAPI:
     """Returns details about your apikey."""
     result = self.api_call('key/info', {})
 
-    if not isinstance(result, dict):
+    if not isinstance(result, list):
       raise ValueError('Invalid return value from api_call')
 
-    return result
+    if len(result) != 1:
+      raise ValueError('Invalid return value from api_call')
+
+    return result[0]
 
   def api_reports_subscribed(self) -> typing.List[str]:
     """List of reports that the user is subscribed to."""

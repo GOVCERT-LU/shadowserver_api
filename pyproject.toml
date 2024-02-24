@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "shadowserver_api"
 description = "Shadowserver API implementation library"
-license = {text = "AGPLv3+"}
-authors = [{name = "Georges Toth", email = "georges.toth@govcert.etat.lu"}]
+license = { text = "AGPLv3+" }
+authors = [{ name = "Georges Toth", email = "georges.toth@govcert.etat.lu" }]
 keywords = ["shadowserver"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -42,6 +42,7 @@ docs = [
 dev = [
     "mypy",
     "ruff",
+    "unasyncd",
 ]
 test = [
     "pytest",
@@ -168,6 +169,15 @@ ignore = [
 
 [tool.ruff.format]
 quote-style = "single"
+exclude = ["govcert_blmapi/api.py"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.unasyncd]
+files = { "shadowserver_api/async_api.py" = "shadowserver_api/api.py" }
+add_replacements = { "AsyncShadowServerAPI" = "ShadowServerAPI", "httpx.AsyncClient" = "httpx.Client" }
+add_editors_note = true
+cache = false
+force_regen = true
+ruff_fix = true

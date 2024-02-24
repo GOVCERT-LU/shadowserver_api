@@ -14,3 +14,9 @@ Should work on Python version >= 3.8
 ```shell script
 pip install shadowserver-api
 ```
+
+### Developer Notes
+The file `api.py` should never be edited directly; instead it can be generated from `async_api.py` with
+```shell
+unasyncd
+```

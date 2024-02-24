@@ -15,8 +15,6 @@ plugins:
       python:
         rendering:
           show_source: true
-    watch:
-      - shadowserver_api
 
 markdown_extensions:
   - pymdownx.highlight:

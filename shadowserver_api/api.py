@@ -37,10 +37,10 @@ class ShadowServerAPI:
     self.logger.debug('DATA: %s', json.dumps(request_data, indent=2))
 
     request_data['apikey'] = self.api_key
-    request_bytes = json.dumps(request_data)
-    request_hmac = self._generate_hmac(request_bytes.encode())
+    request_bytes = json.dumps(request_data).encode()
+    request_hmac = self._generate_hmac(request_bytes)
 
-    response = self.session.post(url, data=request_bytes, headers={'HMAC2': request_hmac})
+    response = self.session.post(url, content=request_bytes, headers={'HMAC2': request_hmac})
 
     if response.status_code != 200:
       try:

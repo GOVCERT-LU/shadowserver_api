@@ -10,11 +10,11 @@ import logging
 import re
 import typing
 
-import requests
+import httpx
 
 from .exceptions import InvalidRequest, InvalidResponse, NoSupportedReportFilter
 
-regex_date = re.compile(r'''^(\d{4}-\d{2}-\d{2}|now)$''')
+regex_date = re.compile(r"""^(\d{4}-\d{2}-\d{2}|now)$""")
 
 
 class ShadowServerAPI:
@@ -22,18 +22,14 @@ class ShadowServerAPI:
     self.api_url = api_url
     self.api_key = api_key
     self.api_secret_bytes = api_secret.encode()
-    self.timeout = timeout
-
+    self.session = httpx.Client(timeout=timeout)
     self.logger = logging.getLogger(__name__)
 
   def _generate_hmac(self, request_bytes: bytes) -> str:
     hmac_generator = hmac.new(self.api_secret_bytes, request_bytes, hashlib.sha256)
     return hmac_generator.hexdigest()
 
-  def api_call(self,
-               method: str,
-               request_data: typing.Dict[str, typing.Any]
-               ) -> typing.Any:
+  def api_call(self, method: str, request_data: typing.Dict[str, typing.Any]) -> typing.Any:
     """Call the specified api method with a request dictionary."""
     url = f'{self.api_url}{method}'
 
@@ -41,10 +37,10 @@ class ShadowServerAPI:
     self.logger.debug('DATA: %s', json.dumps(request_data, indent=2))
 
     request_data['apikey'] = self.api_key
-    request_bytes = json.dumps(request_data).encode()
-    request_hmac = self._generate_hmac(request_bytes)
+    request_bytes = json.dumps(request_data)
+    request_hmac = self._generate_hmac(request_bytes.encode())
 
-    response = requests.post(url, data=request_bytes, headers={'HMAC2': request_hmac}, timeout=self.timeout)
+    response = self.session.post(url, data=request_bytes, headers={'HMAC2': request_hmac})
 
     if response.status_code != 200:
       try:
@@ -100,12 +96,14 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_list(self,
-                       reports: typing.Optional[typing.List[str]] = None,
-                       start_date: typing.Optional[str] = None,
-                       end_date: typing.Optional[str] = None,
-                       report_type: typing.Optional[str] = None,
-                       limit: typing.Optional[int] = None) -> typing.List[typing.Dict[str, typing.Any]]:
+  def api_reports_list(
+    self,
+    reports: typing.Optional[typing.List[str]] = None,
+    start_date: typing.Optional[str] = None,
+    end_date: typing.Optional[str] = None,
+    report_type: typing.Optional[str] = None,
+    limit: typing.Optional[int] = None,
+  ) -> typing.List[typing.Dict[str, typing.Any]]:
     """List of actual reports that could be downloaded."""
     request_data: typing.Dict[str, typing.Any] = {}
 
@@ -137,10 +135,9 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_download(self,
-                           report_id: str,
-                           report: typing.Optional[str] = None,
-                           limit: typing.Optional[int] = None) -> typing.List[typing.Dict[str, typing.Any]]:
+  def api_reports_download(
+    self, report_id: str, report: typing.Optional[str] = None, limit: typing.Optional[int] = None
+  ) -> typing.List[typing.Dict[str, typing.Any]]:
     """Download specific report."""
     request_data = {
       'id': report_id,
@@ -159,14 +156,16 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_query(self,
-                        query: typing.Dict[str, str],
-                        sort: str = 'ascending',
-                        start_date: str = None,
-                        end_date: typing.Optional[str] = None,
-                        facet: typing.Optional[str] = None,
-                        limit: int = 1000,
-                        pagination: bool = True) -> typing.Iterator[typing.Dict[str, typing.Any]]:
+  def api_reports_query(
+    self,
+    query: typing.Dict[str, str],
+    sort: str = 'ascending',
+    start_date: typing.Optional[str] = None,
+    end_date: typing.Optional[str] = None,
+    facet: typing.Optional[str] = None,
+    limit: int = 1000,
+    pagination: bool = True,
+  ) -> typing.Iterator[typing.Dict[str, typing.Any]]:
     """Do a reports query.
 
     Args:
@@ -187,11 +186,11 @@ class ShadowServerAPI:
       'page': '1',
     }
 
-    if start_date:
+    if start_date is not None:
       if not regex_date.match(start_date):
         raise ValueError('Invalid start_date format.')
 
-      if end_date:
+      if end_date is not None:
         if not regex_date.match(end_date):
           raise ValueError('Invalid end_date format.')
 
@@ -226,11 +225,13 @@ class ShadowServerAPI:
 
         yield from result
 
-  def api_reports_stats(self,
-                        start_date: str = None,
-                        end_date: typing.Optional[str] = None,
-                        report: typing.Optional[typing.Sequence[str]] = None,
-                        report_type: typing.Optional[typing.Sequence[str]] = None) -> typing.List[typing.Tuple[str, str, str]]:
+  def api_reports_stats(
+    self,
+    start_date: typing.Optional[str] = None,
+    end_date: typing.Optional[str] = None,
+    report: typing.Optional[typing.Sequence[str]] = None,
+    report_type: typing.Optional[typing.Sequence[str]] = None,
+  ) -> typing.List[typing.Tuple[str, str, str]]:
     """Fetch report statistics.
 
     Args:
@@ -244,11 +245,11 @@ class ShadowServerAPI:
     if report:
       request_data['report'] = report
 
-    if start_date:
+    if start_date is not None:
       if not regex_date.match(start_date):
         raise ValueError('Invalid start_date format.')
 
-      if end_date:
+      if end_date is not None:
         if not regex_date.match(end_date):
           raise ValueError('Invalid end_date format.')
 
@@ -266,9 +267,10 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_device_info(self,
-                              query: typing.Dict[str, str],
-                              ) -> typing.Dict[str, typing.Any]:
+  def api_reports_device_info(
+    self,
+    query: typing.Dict[str, str],
+  ) -> typing.Dict[str, typing.Any]:
     """Do a reports device-info query, which provides device details for a given IP.
 
     Args:
@@ -284,9 +286,7 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_schema(self,
-                         report_type: str
-                         ) -> typing.Dict[str, typing.Any]:
+  def api_reports_schema(self, report_type: str) -> typing.Dict[str, typing.Any]:
     """Return a schema for a given report type.
 
     Args:

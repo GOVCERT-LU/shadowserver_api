@@ -1,4 +1,5 @@
 *.pyc
+uv.lock
 config.yaml
 
 build

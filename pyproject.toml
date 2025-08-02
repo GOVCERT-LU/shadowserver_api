@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.2", "setuptools_scm[toml]>=6.2"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "shadowserver_api"
@@ -20,7 +20,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">= 3.8"
+requires-python = ">= 3.9"
 dependencies = [
     "pyyaml",
     "httpx",
@@ -34,12 +34,13 @@ content-type = "text/markdown"
 [project.urls]
 Homepage = "https://github.com/GOVCERT-LU/shadowserver_api"
 
-[project.optional-dependencies]
+[dependency-groups]
 docs = [
     "mkdocs-material",
     "mkdocstrings[python]>=0.18",
 ]
 dev = [
+    "pip",
     "mypy",
     "ruff",
     "unasyncd",
@@ -49,22 +50,11 @@ test = [
     "coverage",
 ]
 
-[tool.setuptools_scm]
+[tool.hatch.envs.default]
+installer = "uv"
 
-[tool.setuptools]
-zip-safe = false
-include-package-data = true
-license-files = ["LICENSE"]
-
-[tool.setuptools.packages.find]
-exclude = [
-    "e2e",
-    "tests",
-]
-namespaces = false
-
-[tool.setuptools.package-data]
-shadowserver_api = ["py.typed"]
+[tool.hatch.version]
+source = "vcs"
 
 [tool.mypy]
 show_error_context = true
@@ -82,7 +72,7 @@ check_untyped_defs = false
 [tool.ruff]
 line-length = 160
 indent-width = 2
-target-version = "py38"
+target-version = "py39"
 
 [tool.ruff.lint]
 select = [

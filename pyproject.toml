@@ -37,7 +37,7 @@ Homepage = "https://github.com/GOVCERT-LU/shadowserver_api"
 [dependency-groups]
 docs = [
     "mkdocs-material",
-    "mkdocstrings[python]>=0.18",
+    "mkdocstrings[crystal,python]",
 ]
 dev = [
     "pip",

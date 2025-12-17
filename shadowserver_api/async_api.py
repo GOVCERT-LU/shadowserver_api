@@ -137,9 +137,7 @@ class AsyncShadowServerAPI:
 
     return result
 
-  async def api_reports_download(
-    self, report_id: str, report: str | None = None, limit: int | None = None
-  ) -> list[dict[str, typing.Any]]:
+  async def api_reports_download(self, report_id: str) -> list[dict[str, typing.Any]]:
     """Download specific report."""
     download_url = f'https://dl.shadowserver.org/{report_id}'
     res = await self.session.get(download_url)

@@ -139,9 +139,7 @@ class ShadowServerAPI:
 
     return result
 
-  def api_reports_download(
-    self, report_id: str, report: str | None = None, limit: int | None = None
-  ) -> list[dict[str, typing.Any]]:
+  def api_reports_download(self, report_id: str) -> list[dict[str, typing.Any]]:
     """Download specific report."""
     download_url = f'https://dl.shadowserver.org/{report_id}'
     res = self.session.get(download_url)

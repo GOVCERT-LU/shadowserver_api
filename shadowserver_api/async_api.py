@@ -3,8 +3,10 @@
 API documentation is available at: https://www.shadowserver.org/what-we-do/network-reporting/api-documentation/
 """
 
+import csv
 import hashlib
 import hmac
+import io
 import json
 import logging
 import re
@@ -29,7 +31,7 @@ class AsyncShadowServerAPI:
     hmac_generator = hmac.new(self.api_secret_bytes, request_bytes, hashlib.sha256)
     return hmac_generator.hexdigest()
 
-  async def api_call(self, method: str, request_data: typing.Dict[str, typing.Any]) -> typing.Any:
+  async def api_call(self, method: str, request_data: dict[str, typing.Any]) -> typing.Any:
     """Call the specified api method with a request dictionary."""
     url = f'{self.api_url}{method}'
 
@@ -57,7 +59,7 @@ class AsyncShadowServerAPI:
     except ValueError as exc:
       raise InvalidResponse(response.text) from exc
 
-  async def api_test_ping(self) -> typing.Dict[str, typing.Any]:
+  async def api_test_ping(self) -> dict[str, typing.Any]:
     """Check your connection to the API server."""
     result = await self.api_call('test/ping', {})
 
@@ -66,7 +68,7 @@ class AsyncShadowServerAPI:
 
     return result
 
-  async def api_key_info(self) -> typing.Dict[str, typing.Any]:
+  async def api_key_info(self) -> dict[str, typing.Any]:
     """Returns details about your apikey."""
     result = await self.api_call('key/info', {})
 
@@ -78,7 +80,7 @@ class AsyncShadowServerAPI:
 
     return result[0]
 
-  async def api_reports_subscribed(self) -> typing.List[str]:
+  async def api_reports_subscribed(self) -> list[str]:
     """List of reports that the user is subscribed to."""
     result = await self.api_call('reports/subscribed', {})
 
@@ -87,7 +89,7 @@ class AsyncShadowServerAPI:
 
     return result
 
-  async def api_reports_types(self) -> typing.List[str]:
+  async def api_reports_types(self) -> list[str]:
     """List of all the types of reports that are available for the subscriber."""
     result = await self.api_call('reports/types', {})
 
@@ -98,14 +100,14 @@ class AsyncShadowServerAPI:
 
   async def api_reports_list(
     self,
-    reports: typing.Optional[typing.List[str]] = None,
-    start_date: typing.Optional[str] = None,
-    end_date: typing.Optional[str] = None,
-    report_type: typing.Optional[str] = None,
-    limit: typing.Optional[int] = None,
-  ) -> typing.List[typing.Dict[str, typing.Any]]:
+    reports: list[str] | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    report_type: str | None = None,
+    limit: int | None = None,
+  ) -> list[dict[str, typing.Any]]:
     """List of actual reports that could be downloaded."""
-    request_data: typing.Dict[str, typing.Any] = {}
+    request_data: dict[str, typing.Any] = {}
 
     if reports:
       request_data['reports'] = reports
@@ -136,36 +138,28 @@ class AsyncShadowServerAPI:
     return result
 
   async def api_reports_download(
-    self, report_id: str, report: typing.Optional[str] = None, limit: typing.Optional[int] = None
-  ) -> typing.List[typing.Dict[str, typing.Any]]:
+    self, report_id: str, report: str | None = None, limit: int | None = None
+  ) -> list[dict[str, typing.Any]]:
     """Download specific report."""
-    request_data = {
-      'id': report_id,
-    }
+    download_url = f'https://dl.shadowserver.org/{report_id}'
+    res = await self.session.get(download_url)
 
-    if report:
-      request_data['report'] = report
+    raw = io.StringIO(res.text)
+    csv_reader = csv.DictReader(raw)
+    data = list(csv_reader)
 
-    if limit:
-      request_data['limit'] = str(limit)
-
-    result = await self.api_call('reports/download', request_data)
-
-    if not isinstance(result, list):
-      raise ValueError('Invalid return value from api_call')
-
-    return result
+    return data
 
   async def api_reports_query(
     self,
-    query: typing.Dict[str, str],
+    query: dict[str, str],
     sort: str = 'ascending',
-    start_date: typing.Optional[str] = None,
-    end_date: typing.Optional[str] = None,
-    facet: typing.Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    facet: str | None = None,
     limit: int = 1000,
     pagination: bool = True,
-  ) -> typing.AsyncIterator[typing.Dict[str, typing.Any]]:
+  ) -> typing.AsyncIterator[dict[str, typing.Any]]:
     """Do a reports query.
 
     Args:
@@ -229,11 +223,11 @@ class AsyncShadowServerAPI:
 
   async def api_reports_stats(
     self,
-    start_date: typing.Optional[str] = None,
-    end_date: typing.Optional[str] = None,
-    report: typing.Optional[typing.Sequence[str]] = None,
-    report_type: typing.Optional[typing.Sequence[str]] = None,
-  ) -> typing.List[typing.Tuple[str, str, str]]:
+    start_date: str | None = None,
+    end_date: str | None = None,
+    report: typing.Sequence[str] | None = None,
+    report_type: typing.Sequence[str] | None = None,
+  ) -> list[tuple[str, str, str]]:
     """Fetch report statistics.
 
     Args:
@@ -242,7 +236,7 @@ class AsyncShadowServerAPI:
       report: Filter by report name.
       report_type: Filter by report type.
     """
-    request_data: typing.Dict[str, typing.Any] = {}
+    request_data: dict[str, typing.Any] = {}
 
     if report:
       request_data['report'] = report
@@ -271,8 +265,8 @@ class AsyncShadowServerAPI:
 
   async def api_reports_device_info(
     self,
-    query: typing.Dict[str, str],
-  ) -> typing.Dict[str, typing.Any]:
+    query: dict[str, str],
+  ) -> dict[str, typing.Any]:
     """Do a reports device-info query, which provides device details for a given IP.
 
     Args:
@@ -288,7 +282,7 @@ class AsyncShadowServerAPI:
 
     return result
 
-  async def api_reports_schema(self, report_type: str) -> typing.Dict[str, typing.Any]:
+  async def api_reports_schema(self, report_type: str) -> dict[str, typing.Any]:
     """Return a schema for a given report type.
 
     Args:

@@ -9,6 +9,7 @@ theme:
 
 plugins:
 - search
+- mkdocstrings
 
 markdown_extensions:
   - pymdownx.highlight:

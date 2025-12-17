@@ -11,5 +11,6 @@ dist
 .mypy_cache
 .pytest_cache
 venv
+.venv
 .vscode
 shadowserver_api.egg-info

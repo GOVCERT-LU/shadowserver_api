@@ -4,9 +4,9 @@
 
 This project is about implementing the [Shadowserver API](https://www.shadowserver.org/what-we-do/network-reporting/api-documentation/), foremost the reports API, in Python.
 
-Supported and tested Python version: 3.11
+Supported and tested Python version: 3.13
 
-Should work on Python version >= 3.8
+Should work on Python version >= 3.10
 
 **Note:** To use this library you must have a valid API key in order to access the API services of Te Shadowserver Foundation.
 

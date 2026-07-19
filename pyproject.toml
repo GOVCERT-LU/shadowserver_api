@@ -21,8 +21,8 @@ classifiers = [
 ]
 requires-python = ">= 3.10"
 dependencies = [
+    "httpx2~=2.7",
     "pyyaml",
-    "httpx",
 ]
 dynamic = ["version"]
 
@@ -40,8 +40,8 @@ docs = [
     "mkdocstrings[crystal,python]",
 ]
 dev = [
-    "pip",
     "mypy",
+    "prek>=0.4.10",
     "ruff",
     "unasyncd",
 ]
@@ -164,7 +164,7 @@ convention = "google"
 
 [tool.unasyncd]
 files = { "shadowserver_api/async_api.py" = "shadowserver_api/api.py" }
-add_replacements = { "AsyncShadowServerAPI" = "ShadowServerAPI", "httpx.AsyncClient" = "httpx.Client" }
+add_replacements = { "AsyncShadowServerAPI" = "ShadowServerAPI", "httpx2.AsyncClient" = "httpx2.Client" }
 add_editors_note = true
 cache = false
 force_regen = true

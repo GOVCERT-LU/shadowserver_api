@@ -12,7 +12,7 @@ import logging
 import re
 import typing
 
-import httpx
+import httpx2
 
 from .exceptions import InvalidRequest, InvalidResponse, NoSupportedReportFilter
 
@@ -24,7 +24,7 @@ class AsyncShadowServerAPI:
     self.api_url = api_url
     self.api_key = api_key
     self.api_secret_bytes = api_secret.encode()
-    self.session = httpx.AsyncClient(timeout=timeout)
+    self.session = httpx2.AsyncClient(timeout=timeout)
     self.logger = logging.getLogger(__name__)
 
   def _generate_hmac(self, request_bytes: bytes) -> str:
